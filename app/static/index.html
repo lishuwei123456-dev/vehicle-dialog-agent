@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vehicle Dialog Agent Console</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Vehicle Dialog Agent</p>
+          <h1>车机语义测试台</h1>
+        </div>
+        <div class="topbar-status" aria-label="system status">
+          <span class="status-dot"></span>
+          <span>Local Demo</span>
+        </div>
+      </header>
+
+      <section class="dashboard-grid" aria-label="cockpit console">
+        <section class="vehicle-panel panel" aria-label="cockpit display">
+          <div class="screen-frame">
+            <div class="screen-topline">
+              <span id="clockText">09:30</span>
+              <span id="weatherBadge">暂无天气</span>
+            </div>
+            <div class="road-view" aria-hidden="true">
+              <div class="lane lane-left"></div>
+              <div class="lane lane-right"></div>
+              <div class="route-line"></div>
+              <div class="vehicle-marker"></div>
+            </div>
+            <div class="screen-readout">
+              <div>
+                <span class="readout-label">NAV</span>
+                <strong id="navText">未设置</strong>
+              </div>
+              <div>
+                <span class="readout-label">MEDIA</span>
+                <strong id="mediaText">未播放</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="state-grid" aria-label="vehicle state">
+            <div class="metric">
+              <span>空调</span>
+              <strong id="climateText">关闭</strong>
+            </div>
+            <div class="metric">
+              <span>车窗</span>
+              <strong id="windowText">0%</strong>
+            </div>
+            <div class="metric">
+              <span>音量</span>
+              <strong id="volumeText">42</strong>
+            </div>
+            <div class="metric">
+              <span>座椅</span>
+              <strong id="seatText">常规</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="command-panel panel" aria-label="command input">
+          <div class="section-title">
+            <span>语音指令</span>
+            <button class="ghost-button" id="resetButton" type="button">重置会话</button>
+          </div>
+
+          <form class="command-form" id="commandForm">
+            <input
+              id="queryInput"
+              name="query"
+              type="text"
+              autocomplete="off"
+              placeholder="输入：导航去北京南站"
+              aria-label="query"
+            />
+            <button class="primary-button" type="submit">发送</button>
+          </form>
+
+          <div class="quick-grid" id="quickCommands" aria-label="quick commands"></div>
+
+          <div class="result-band" aria-live="polite">
+            <span id="intentBadge" class="intent-badge">UNKNOWN</span>
+            <p id="replyText">等待输入</p>
+          </div>
+        </section>
+
+        <section class="module-panel panel" aria-label="module trace">
+          <div class="section-title">
+            <span>模块链路</span>
+            <span id="confidenceText">0.00</span>
+          </div>
+          <ol class="module-list" id="moduleList"></ol>
+        </section>
+      </section>
+
+      <section class="json-panel panel" aria-label="json result">
+        <div class="section-title">
+          <span>接口返回</span>
+          <span id="sessionText">session</span>
+        </div>
+        <pre id="jsonOutput">{
+  "status": "ready"
+}</pre>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+from enum import Enum
+
+
+class Intent(str, Enum):
+    NAVIGATE = "NAVIGATE"
+    PLAY_MUSIC = "PLAY_MUSIC"
+    WEATHER_QUERY = "WEATHER_QUERY"
+    VEHICLE_CONTROL = "VEHICLE_CONTROL"
+    UNKNOWN = "UNKNOWN"
