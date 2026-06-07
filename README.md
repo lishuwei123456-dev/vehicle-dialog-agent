@@ -91,6 +91,26 @@ uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 http://127.0.0.1:8080/
 ```
 
+一键脚本：
+
+```powershell
+.\scripts\run_local.ps1
+```
+
+```bash
+bash scripts/run_local.sh
+```
+
+Docker Compose：
+
+```bash
+docker compose up --build
+```
+
+## 运行效果
+
+![车机语义测试台](docs/assets/frontend-console.png)
+
 ## 核心接口
 
 健康检查：
@@ -146,6 +166,11 @@ python training/scripts/train_transformer_classifier.py \
   --batch-size 16
 ```
 
+仓库内置了自造样例数据：
+
+- `training/data/intent_sample.jsonl`
+- `training/data/reject_sample.jsonl`
+
 ## AutoDL 推荐服务器
 
 推荐配置：
@@ -165,6 +190,12 @@ python training/scripts/train_transformer_classifier.py \
 
 ```bash
 pytest
+```
+
+样例评测脚本：
+
+```bash
+python scripts/evaluate_sample.py
 ```
 
 当前测试覆盖：

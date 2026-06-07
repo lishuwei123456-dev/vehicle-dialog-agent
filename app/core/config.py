@@ -14,6 +14,7 @@ class Settings:
     llm_base_url: str = ""
     llm_api_key: str = ""
     amap_api_key: str = ""
+    weather_provider: str = "demo"
 
 
 @lru_cache
@@ -28,4 +29,5 @@ def get_settings() -> Settings:
         llm_base_url=os.getenv("LLM_BASE_URL", ""),
         llm_api_key=os.getenv("LLM_API_KEY", ""),
         amap_api_key=os.getenv("AMAP_API_KEY", ""),
+        weather_provider=os.getenv("WEATHER_PROVIDER", "demo"),
     )

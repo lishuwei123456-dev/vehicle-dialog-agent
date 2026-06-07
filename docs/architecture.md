@@ -30,3 +30,11 @@
 ## 可替换设计
 
 在线演示默认使用可解释 baseline，保证无需 GPU 也能运行。训练环境可用 `training/scripts/train_transformer_classifier.py` 微调 BERT/RoBERTa，然后将 `IntentClassifier` 替换为模型推理服务。
+
+## 工程化复现
+
+项目提供三种运行方式：
+
+- 本地虚拟环境：`scripts/run_local.ps1` 或 `scripts/run_local.sh`
+- AutoDL：`scripts/run_autodl.sh`
+- Docker Compose：`docker compose up --build`

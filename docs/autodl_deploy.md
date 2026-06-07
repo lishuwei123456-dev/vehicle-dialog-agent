@@ -41,6 +41,12 @@ pip install -r requirements.txt
 uvicorn app.main:app --host 0.0.0.0 --port 8080
 ```
 
+也可以使用脚本：
+
+```bash
+bash scripts/run_autodl.sh
+```
+
 训练环境：
 
 ```bash
@@ -58,6 +64,21 @@ python training/scripts/train_transformer_classifier.py \
 ```bash
 export STATE_BACKEND=redis
 export REDIS_URL=redis://127.0.0.1:6379/0
+uvicorn app.main:app --host 0.0.0.0 --port 8080
+```
+
+如果使用 Docker Compose，本项目会自动启动 Redis：
+
+```bash
+docker compose up --build
+```
+
+## 可选真实天气
+
+默认天气工具使用本地模拟数据，便于离线演示。如果实例可以访问公网，可切换到 Open-Meteo：
+
+```bash
+export WEATHER_PROVIDER=open-meteo
 uvicorn app.main:app --host 0.0.0.0 --port 8080
 ```
 

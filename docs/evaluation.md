@@ -19,6 +19,12 @@ curl http://127.0.0.1:8080/v1/evaluation/sample
 
 该接口运行一组小样例，返回语义链路的基础准确率。正式评测时应扩展 `app/evaluation/evaluator.py`，增加更多多轮样本和边界样本。
 
+也可以直接运行脚本：
+
+```bash
+python scripts/evaluate_sample.py
+```
+
 ## 评测数据建议
 
 - 每个意图至少 100 条样例。
