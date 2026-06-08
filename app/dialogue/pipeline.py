@@ -22,7 +22,6 @@ class DialoguePipeline:
 
     def parse(self, request: DialogueRequest) -> DialogueResponse:
         query = request.query.strip()
-        state = self.state_store.get(request.session_id)
         reject = self.rejector.predict(query)
         if not reject.accepted:
             return DialogueResponse(
@@ -38,7 +37,6 @@ class DialoguePipeline:
 
         prediction = self.intent_classifier.predict(query)
         slots = self.slot_extractor.extract(query, prediction.intent)
-        slots = self._resolve_context_slots(query, prediction.intent, slots, state)
         function_call = self.function_planner.plan(prediction.intent, slots)
         tool_result = self._execute_tool(function_call)
         reply = self._build_reply(prediction.intent, slots, tool_result)
@@ -52,7 +50,7 @@ class DialoguePipeline:
             tool_result=tool_result,
             reply=reply,
         )
-        self.state_store.append(request.session_id, query, response.intent.value, response.reply, response.slots)
+        self.state_store.append(request.session_id, query, response.intent.value, response.reply)
         return response
 
     def _execute_tool(self, function_call: dict[str, Any]) -> dict[str, Any]:
@@ -61,40 +59,6 @@ class DialoguePipeline:
         if name in {"start_navigation", "search_music", "query_weather"}:
             return call_tool(name, arguments)
         return {}
-
-    def _resolve_context_slots(
-        self,
-        query: str,
-        intent: Intent,
-        slots: dict[str, str],
-        state: Any,
-    ) -> dict[str, str]:
-        resolved = dict(slots)
-        if intent == Intent.WEATHER_QUERY and self._needs_location_context(query, resolved):
-            last_place = state.latest_slot("destination", "city")
-            city = self._city_from_place(last_place)
-            if city:
-                resolved["city"] = city
-        if intent == Intent.NAVIGATE and not resolved.get("destination"):
-            last_destination = state.latest_slot("destination")
-            if last_destination and any(word in query for word in ("那里", "那边", "目的地")):
-                resolved["destination"] = last_destination
-        if intent == Intent.VEHICLE_CONTROL and resolved.get("target") == "vehicle_device":
-            last_target = state.latest_slot("target")
-            if last_target and any(word in query for word in ("再", "继续", "一点", "它")):
-                resolved["target"] = last_target
-        return resolved
-
-    def _needs_location_context(self, query: str, slots: dict[str, str]) -> bool:
-        if slots.get("city") != "当前城市":
-            return False
-        return any(word in query for word in ("那里", "那边", "目的地", "当地", "到那"))
-
-    def _city_from_place(self, place: str) -> str:
-        for city in ("北京", "上海", "广州", "深圳", "杭州", "成都", "重庆", "武汉", "南京"):
-            if city in place:
-                return city
-        return ""
 
     def _build_reply(self, intent: Intent, slots: dict[str, str], tool_result: dict[str, Any]) -> str:
         if intent == Intent.NAVIGATE:

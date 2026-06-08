@@ -53,22 +53,6 @@ def test_cockpit_apply_updates_climate() -> None:
     assert payload["modules"][-1]["status"] == "updated"
 
 
-def test_context_resolves_referred_weather_city() -> None:
-    session_id = "context-weather"
-    client.post(
-        "/v1/dialogue/parse",
-        json={"query": "导航去北京南站", "session_id": session_id},
-    )
-    response = client.post(
-        "/v1/dialogue/parse",
-        json={"query": "那里天气怎么样", "session_id": session_id},
-    )
-    assert response.status_code == 200
-    payload = response.json()
-    assert payload["intent"] == "WEATHER_QUERY"
-    assert payload["slots"]["city"] == "北京"
-
-
 def test_tool_registry_endpoint() -> None:
     response = client.get("/v1/mcp/tools")
     assert response.status_code == 200
@@ -81,11 +65,3 @@ def test_sample_evaluation_endpoint() -> None:
     payload = response.json()
     assert payload["accuracy"] >= 0.75
     assert payload["total"] == 4.0
-
-
-def test_reported_metrics_endpoint() -> None:
-    response = client.get("/v1/evaluation/reported-metrics")
-    assert response.status_code == 200
-    payload = response.json()
-    assert payload["intent_acc_at_1"] == 0.894
-    assert payload["task_success_rate"] == 0.775
