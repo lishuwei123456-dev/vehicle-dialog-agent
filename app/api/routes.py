@@ -4,7 +4,7 @@ from pathlib import Path
 
 from app.cockpit.simulator import CockpitSimulator
 from app.dialogue.pipeline import DialoguePipeline
-from app.evaluation.evaluator import EvalCase, evaluate_cases
+from app.evaluation.evaluator import EvalCase, evaluate_cases, reported_metrics
 from app.llm.function_calling import FUNCTION_SCHEMAS
 from app.mcp.registry import TOOL_REGISTRY
 from app.schemas.dialogue import (
@@ -67,3 +67,8 @@ def sample_evaluation() -> dict[str, float]:
         EvalCase("打开空调", "VEHICLE_CONTROL"),
     ]
     return evaluate_cases(cases)
+
+
+@router.get("/v1/evaluation/reported-metrics")
+def evaluation_reported_metrics() -> dict[str, object]:
+    return reported_metrics()

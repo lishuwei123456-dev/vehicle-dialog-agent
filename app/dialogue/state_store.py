@@ -12,6 +12,7 @@ class Turn:
     query: str
     intent: str
     reply: str
+    slots: dict[str, str] = field(default_factory=dict)
     timestamp: float = field(default_factory=time.time)
 
 
@@ -20,13 +21,28 @@ class ConversationState:
     session_id: str
     turns: list[Turn] = field(default_factory=list)
 
-    def append(self, query: str, intent: str, reply: str, max_turns: int = 6) -> None:
-        self.turns.append(Turn(query=query, intent=intent, reply=reply))
+    def append(
+        self,
+        query: str,
+        intent: str,
+        reply: str,
+        slots: dict[str, str] | None = None,
+        max_turns: int = 6,
+    ) -> None:
+        self.turns.append(Turn(query=query, intent=intent, reply=reply, slots=slots or {}))
         self.turns = self.turns[-max_turns:]
 
     @property
     def last_query(self) -> str:
         return self.turns[-1].query if self.turns else ""
+
+    def latest_slot(self, *names: str) -> str:
+        for turn in reversed(self.turns):
+            for name in names:
+                value = turn.slots.get(name, "")
+                if value:
+                    return value
+        return ""
 
 
 class InMemoryStateStore:
@@ -40,9 +56,16 @@ class InMemoryStateStore:
             self._states[session_id] = ConversationState(session_id=session_id)
         return self._states[session_id]
 
-    def append(self, session_id: str, query: str, intent: str, reply: str) -> ConversationState:
+    def append(
+        self,
+        session_id: str,
+        query: str,
+        intent: str,
+        reply: str,
+        slots: dict[str, str] | None = None,
+    ) -> ConversationState:
         state = self.get(session_id)
-        state.append(query=query, intent=intent, reply=reply)
+        state.append(query=query, intent=intent, reply=reply, slots=slots)
         return state
 
 
@@ -65,9 +88,16 @@ class RedisStateStore:
         turns = [Turn(**turn) for turn in data.get("turns", [])]
         return ConversationState(session_id=session_id, turns=turns)
 
-    def append(self, session_id: str, query: str, intent: str, reply: str) -> ConversationState:
+    def append(
+        self,
+        session_id: str,
+        query: str,
+        intent: str,
+        reply: str,
+        slots: dict[str, str] | None = None,
+    ) -> ConversationState:
         state = self.get(session_id)
-        state.append(query=query, intent=intent, reply=reply)
+        state.append(query=query, intent=intent, reply=reply, slots=slots)
         payload = {"session_id": state.session_id, "turns": [turn.__dict__ for turn in state.turns]}
         self._client.set(self._key(session_id), json.dumps(payload, ensure_ascii=False), ex=self._ttl_seconds)
         return state
